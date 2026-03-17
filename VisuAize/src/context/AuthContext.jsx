@@ -14,6 +14,23 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const parseResponsePayload = async (response) => {
+        const raw = await response.text().catch(() => '');
+        if (!raw) return { data: {}, raw: '' };
+        try {
+            return { data: JSON.parse(raw), raw };
+        } catch {
+            return { data: {}, raw };
+        }
+    };
+
+    const buildDetailedAuthError = (action, response, payload) => {
+        const fromPayload = payload?.data?.error || payload?.data?.message;
+        const fromRaw = payload?.raw && payload.raw.trim() ? payload.raw.trim() : '';
+        const detail = fromPayload || fromRaw || 'No error details returned by server';
+        return `${action} failed (${response.status} ${response.statusText}): ${detail}`;
+    };
+
     const startDemoSession = (username) => {
         const demoToken = `demo_token_${Date.now()}`;
         sessionStorage.setItem(TOKEN_KEY, demoToken);
@@ -80,7 +97,8 @@ export function AuthProvider({ children }) {
                 body: JSON.stringify({ username, password })
             });
 
-            const data = await response.json().catch(() => ({}));
+            const payload = await parseResponsePayload(response);
+            const data = payload.data || {};
             if (response.ok && data.token) {
                 sessionStorage.setItem(TOKEN_KEY, data.token);
                 sessionStorage.removeItem(DEMO_USER_KEY);
@@ -92,9 +110,9 @@ export function AuthProvider({ children }) {
                 return startDemoSession(username);
             }
 
-            return { success: false, error: data.error || 'Login failed' };
-        } catch {
-            return startDemoSession(username);
+            return { success: false, error: buildDetailedAuthError('Login', response, payload) };
+        } catch (error) {
+            return { success: false, error: `Login failed (network): ${error?.message || 'Unknown network error'}` };
         }
     };
 
@@ -109,7 +127,7 @@ export function AuthProvider({ children }) {
                 body: JSON.stringify({ username, password })
             });
 
-            const data = await response.json().catch(() => ({}));
+            const payload = await parseResponsePayload(response);
             if (response.ok) {
                 return login(username, password);
             }
@@ -118,9 +136,9 @@ export function AuthProvider({ children }) {
                 return startDemoSession(username);
             }
 
-            return { success: false, error: data.error || 'Signup failed' };
-        } catch {
-            return startDemoSession(username);
+            return { success: false, error: buildDetailedAuthError('Signup', response, payload) };
+        } catch (error) {
+            return { success: false, error: `Signup failed (network): ${error?.message || 'Unknown network error'}` };
         }
     };
 
