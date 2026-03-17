@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "framework": "vite",
+  "installCommand": "npm install --prefix VisuAize",
+  "buildCommand": "npm run build --prefix VisuAize",
+  "outputDirectory": "VisuAize/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
