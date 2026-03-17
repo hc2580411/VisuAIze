@@ -1,0 +1,130 @@
+.info-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+    padding: 1rem;
+    margin-top: auto;
+    /* Push to bottom if in flex container */
+}
+
+.info-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-family: 'Outfit', sans-serif;
+    margin-bottom: 0.75rem;
+}
+
+/* Beginner Mode */
+.concept-box {
+    font-size: 0.9rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-info);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* Advanced Mode */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Intermediate Mode */
+.variable-table {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.var-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+.var-row:last-child {
+    border-bottom: none;
+}
+
+.var-row.header {
+    background: var(--bg-header);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-family: 'Outfit', sans-serif;
+}
+
+.var-name {
+    color: var(--secondary);
+}
+
+.var-val {
+    color: var(--text-main);
+}
+
+.note-text {
+    font-size: 0.75rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+}

@@ -1,0 +1,224 @@
+.floating-settings-container {
+    position: fixed;
+    z-index: 9999;
+    user-select: none;
+    touch-action: none;
+}
+
+.main-trigger {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+        var(--shadow-lg),
+        0 0 20px rgba(99, 102, 241, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    color: white;
+    transition: all var(--transition-smooth);
+    z-index: 2;
+    animation: idlePulse 3s ease-in-out infinite;
+}
+
+.main-trigger:hover {
+    transform: scale(1.1);
+    box-shadow:
+        var(--shadow-lg),
+        0 0 30px rgba(99, 102, 241, 0.5);
+}
+
+.main-trigger:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.main-trigger.open {
+    transform: rotate(90deg);
+    background: var(--primary);
+    animation: none;
+    box-shadow:
+        var(--shadow-lg),
+        0 0 25px rgba(99, 102, 241, 0.6);
+}
+
+@keyframes idlePulse {
+
+    0%,
+    100% {
+        box-shadow:
+            var(--shadow-lg),
+            0 0 20px rgba(99, 102, 241, 0.3);
+    }
+
+    50% {
+        box-shadow:
+            var(--shadow-lg),
+            0 0 30px rgba(99, 102, 241, 0.5);
+    }
+}
+
+.sub-options {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    z-index: 1;
+}
+
+.sub-options.open {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(-65px);
+}
+
+/* For when at the top of the screen */
+.sub-options.top {
+    bottom: auto;
+    top: 60px;
+    transform: translateY(0);
+}
+
+.sub-options.top.open {
+    transform: translateY(0);
+}
+
+.sub-ball {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+.sub-ball:hover {
+    background: white;
+    transform: scale(1.1);
+    color: var(--primary);
+}
+
+[data-theme='dark'] .sub-ball:hover {
+    background: var(--bg-hover);
+}
+
+/* Background Picker Floating Panel */
+.floating-bg-picker {
+    position: absolute;
+    right: 60px;
+    bottom: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem;
+    box-shadow: var(--shadow-xl);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    min-width: 150px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Animations from Sidebar Picker */
+.bg-icon-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bg-icon-option.active {
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+/* Keyboard Shortcuts Panel */
+.floating-shortcuts-panel {
+    position: absolute;
+    right: 60px;
+    bottom: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: var(--shadow-xl);
+    min-width: 200px;
+    animation: fadeIn 0.3s ease;
+}
+
+.shortcuts-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+
+.shortcuts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shortcuts-table td {
+    padding: 0.4rem 0;
+    font-size: 0.813rem;
+    color: var(--text-main);
+}
+
+.shortcuts-table td:last-child {
+    text-align: right;
+}
+
+kbd {
+    background-color: var(--bg-header);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: var(--text-main);
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 5px;
+    white-space: nowrap;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

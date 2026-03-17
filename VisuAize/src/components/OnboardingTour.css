@@ -1,0 +1,203 @@
+/* =============================================
+   Onboarding Tour — Spotlight + Tooltip System
+   ============================================= */
+
+/* Full-screen overlay */
+.tour-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* The SVG mask fills the screen and blocks interaction */
+.tour-mask {
+    position: absolute;
+    inset: 0;
+    pointer-events: all;
+}
+
+/* Pulsing ring around the spotlight */
+.tour-spotlight-ring {
+    animation: spotlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+    0%, 100% {
+        stroke-opacity: 0.5;
+        filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.3));
+    }
+    50% {
+        stroke-opacity: 1;
+        filter: drop-shadow(0 0 18px rgba(99, 102, 241, 0.6));
+    }
+}
+
+/* Tooltip Card */
+.tour-tooltip {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: all;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: tooltipEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes tooltipEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Re-run entrance animation when step changes */
+.tour-tooltip-right { animation: tooltipSlideRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.tour-tooltip-left  { animation: tooltipSlideLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.tour-tooltip-top   { animation: tooltipSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes tooltipSlideRight {
+    from { opacity: 0; transform: translateX(-12px) translateY(-50%); }
+    to   { opacity: 1; transform: translateX(0) translateY(-50%); }
+}
+
+@keyframes tooltipSlideLeft {
+    from { opacity: 0; transform: translateX(12px) translateY(-50%); }
+    to   { opacity: 1; transform: translateX(0) translateY(-50%); }
+}
+
+@keyframes tooltipSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Step badge */
+.tour-tooltip-step {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #818cf8;
+    margin-bottom: 0.5rem;
+}
+
+/* Title */
+.tour-tooltip-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.3px;
+}
+
+/* Description */
+.tour-tooltip-msg {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+    white-space: pre-line;
+}
+
+/* Action buttons row */
+.tour-tooltip-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.tour-btn-skip {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.tour-btn-skip:hover {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.tour-btn-prev {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.tour-btn-prev:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tour-btn-next {
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    padding: 0.55rem 1.4rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
+}
+
+.tour-btn-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45);
+}
+
+/* Progress dots */
+.tour-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tour-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.tour-dot.active {
+    background: #818cf8;
+    width: 18px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+}
+
+.tour-dot.done {
+    background: rgba(129, 140, 248, 0.4);
+}

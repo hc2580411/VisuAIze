@@ -1,0 +1,112 @@
+/* Stack Visualizer Styles */
+.stack-visualizer-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: auto;
+}
+
+.stack-svg {
+    display: block;
+    min-width: 100%;
+    height: auto;
+}
+
+.stack-svg text {
+    font-family: 'Outfit', sans-serif;
+    user-select: none;
+}
+
+.stack-svg .stack-node-text {
+    font-weight: 700;
+    font-size: 16px;
+    fill: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stack-svg .top-indicator {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--text-secondary);
+}
+
+.stack-svg .empty-message {
+    font-size: 20px;
+    fill: var(--text-muted);
+}
+
+.stack-svg .base-layer {
+    stroke: var(--border-color);
+    stroke-width: 5;
+    stroke-linecap: round;
+}
+
+.stack-svg rect {
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
+}
+
+/* Stack info panel */
+.stack-info {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-border);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.stack-info strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .stack-svg .top-indicator {
+    fill: var(--text-secondary);
+}
+
+[data-theme="dark"] .stack-svg .base-layer {
+    stroke: var(--border-color);
+}
+
+/* Edit Input Overlay */
+.stack-edit-input {
+    position: absolute;
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 2px 5px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+}
+
+/* Dragging State */
+.stack-svg .stack-box {
+    cursor: grab;
+    transition: filter 0.2s;
+}
+
+.stack-svg .stack-box.dragging {
+    cursor: grabbing;
+    filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) !important;
+}
+
+.stack-svg .stack-box:hover {
+    filter: brightness(1.1);
+}
