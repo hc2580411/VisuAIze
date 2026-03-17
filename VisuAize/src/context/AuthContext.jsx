@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext();
+const TOKEN_KEY = 'visuaize_token';
+const DEMO_USER_KEY = 'visuaize_demo_user';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
@@ -12,25 +14,54 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const startDemoSession = (username) => {
+        const demoToken = `demo_token_${Date.now()}`;
+        sessionStorage.setItem(TOKEN_KEY, demoToken);
+        sessionStorage.setItem(DEMO_USER_KEY, username);
+        setUser({ username, token: demoToken });
+        return { success: true };
+    };
+
+    const clearSession = () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(DEMO_USER_KEY);
+        setUser(null);
+    };
+
     useEffect(() => {
-        const token = sessionStorage.getItem('visuaize_token');
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        const demoUsername = sessionStorage.getItem(DEMO_USER_KEY);
+
+        if (token && demoUsername && token.startsWith('demo_token_')) {
+            setUser({ username: demoUsername, token });
+            setLoading(false);
+            return;
+        }
+
         if (token) {
             const controller = new AbortController();
             fetch(`${API_BASE_URL}/api/auth/me`, {
                 headers: { 'Authorization': `Bearer ${token}` },
                 signal: controller.signal
             })
-                .then(res => res.json())
+                .then(async (res) => {
+                    const data = await res.json().catch(() => ({}));
+                    return { ok: res.ok, data };
+                })
                 .then(data => {
-                    if (data.username) {
-                        setUser({ username: data.username, token });
+                    if (data.ok && data.data.username) {
+                        setUser({ username: data.data.username, token });
                     } else {
-                        sessionStorage.removeItem('visuaize_token');
+                        clearSession();
                     }
                 })
                 .catch((err) => {
                     if (err.name !== 'AbortError') {
-                        sessionStorage.removeItem('visuaize_token');
+                        if (demoUsername) {
+                            setUser({ username: demoUsername, token });
+                        } else {
+                            clearSession();
+                        }
                     }
                 })
                 .finally(() => setLoading(false));
@@ -42,42 +73,59 @@ export function AuthProvider({ children }) {
     }, []);
 
     const login = async (username, password) => {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-        const data = await response.json();
-        if (response.ok) {
-            sessionStorage.setItem('visuaize_token', data.token);
-            setUser({ username: data.username, token: data.token });
-            return { success: true };
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.token) {
+                sessionStorage.setItem(TOKEN_KEY, data.token);
+                sessionStorage.removeItem(DEMO_USER_KEY);
+                setUser({ username: data.username, token: data.token });
+                return { success: true };
+            }
+
+            if (response.status === 404 || response.status >= 500) {
+                return startDemoSession(username);
+            }
+
+            return { success: false, error: data.error || 'Login failed' };
+        } catch {
+            return startDemoSession(username);
         }
-        return { success: false, error: data.error };
     };
 
     const signup = async (username, password) => {
-        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        localStorage.removeItem('visuaize_mode');
+        localStorage.removeItem('visuaize_tourCompleted');
 
-        const data = await response.json();
-        if (response.ok) {
-            // Reset preferences for new users: Beginner mode + show onboarding tour
-            localStorage.removeItem('visuaize_mode');
-            localStorage.removeItem('visuaize_tourCompleted');
-            // Automatically log in after successful signup
-            return login(username, password);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (response.ok) {
+                return login(username, password);
+            }
+
+            if (response.status === 404 || response.status >= 500) {
+                return startDemoSession(username);
+            }
+
+            return { success: false, error: data.error || 'Signup failed' };
+        } catch {
+            return startDemoSession(username);
         }
-        return { success: false, error: data.error };
     };
 
     const logout = () => {
-        sessionStorage.removeItem('visuaize_token');
-        setUser(null);
+        clearSession();
     };
 
     const value = {
