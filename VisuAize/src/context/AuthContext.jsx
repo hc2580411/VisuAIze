@@ -28,7 +28,16 @@ export function AuthProvider({ children }) {
         const fromPayload = payload?.data?.error || payload?.data?.message;
         const fromRaw = payload?.raw && payload.raw.trim() ? payload.raw.trim() : '';
         const detail = fromPayload || fromRaw || 'No error details returned by server';
-        return `${action} failed (${response.status} ${response.statusText}): ${detail}`;
+        const statusText = response.statusText || 'HTTP Error';
+        return `${action} failed (${response.status} ${statusText}): ${detail}`;
+    };
+
+    const shouldFallbackToDemoSession = (response, payload) => {
+        const infraStatusCodes = [404, 405, 500, 501, 502, 503, 504];
+        if (infraStatusCodes.includes(response.status)) return true;
+        const raw = (payload?.raw || '').toLowerCase();
+        if (raw.includes('<!doctype html') || raw.includes('<html')) return true;
+        return false;
     };
 
     const startDemoSession = (username) => {
@@ -106,7 +115,7 @@ export function AuthProvider({ children }) {
                 return { success: true };
             }
 
-            if (response.status === 404 || response.status >= 500) {
+            if (shouldFallbackToDemoSession(response, payload)) {
                 return startDemoSession(username);
             }
 
@@ -132,7 +141,7 @@ export function AuthProvider({ children }) {
                 return login(username, password);
             }
 
-            if (response.status === 404 || response.status >= 500) {
+            if (shouldFallbackToDemoSession(response, payload)) {
                 return startDemoSession(username);
             }
 
