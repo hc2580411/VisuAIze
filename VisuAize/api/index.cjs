@@ -162,11 +162,10 @@ app.post('/api/conversations', authenticateToken, async (req, res) => {
 });
 
 initializeDB().then(() => {
-    if (!process.env.VERCEL) {
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    }
+    // Always start server in development mode
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 });
 
 module.exports = app;
