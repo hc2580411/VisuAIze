@@ -1,13 +1,21 @@
 {
-  "version": 3,
-  "framework": "vite",
-  "installCommand": "npm install --prefix VisuAize",
-  "buildCommand": "npm run build --prefix VisuAize",
-  "outputDirectory": "VisuAize/dist",
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "VisuAize/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
