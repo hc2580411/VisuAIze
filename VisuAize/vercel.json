@@ -1,12 +1,9 @@
 {
-  "rewrites": [
+  "version": 3,
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.cjs"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
