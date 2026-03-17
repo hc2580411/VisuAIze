@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { getStorageItem, setStorageItem, STORAGE_KEYS } from '../utils/storage';
+import { setStorageItem, STORAGE_KEYS } from '../utils/storage';
 
 /**
  * Comprehensive tour steps.
@@ -108,6 +108,7 @@ export default function OnboardingTour({ onComplete }) {
     const [currentStep, setCurrentStep] = useState(0);
     const [spotlight, setSpotlight] = useState(null);
     const [visible, setVisible] = useState(true);
+    const [tooltipStyle, setTooltipStyle] = useState({});
     const tooltipRef = useRef(null);
 
     const step = TOUR_STEPS[currentStep];
@@ -183,45 +184,61 @@ export default function OnboardingTour({ onComplete }) {
         finishTour();
     }, [finishTour]);
 
+    useEffect(() => {
+        if (!visible || !spotlight || !step) return;
+        const margin = 16;
+        const gap = 16;
+
+        const placeTooltip = () => {
+            const rect = tooltipRef.current?.getBoundingClientRect();
+            const tooltipWidth = Math.min(rect?.width || 360, window.innerWidth - margin * 2);
+            const tooltipHeight = Math.min(rect?.height || 320, window.innerHeight - margin * 2);
+
+            let left = margin;
+            let top = margin;
+
+            if (step.position === 'right') {
+                left = spotlight.left + spotlight.width + gap;
+                top = spotlight.top + spotlight.height / 2 - tooltipHeight / 2;
+            } else if (step.position === 'left') {
+                left = spotlight.left - tooltipWidth - gap;
+                top = spotlight.top + spotlight.height / 2 - tooltipHeight / 2;
+            } else if (step.position === 'top') {
+                left = spotlight.left + spotlight.width / 2 - tooltipWidth / 2;
+                top = spotlight.top - tooltipHeight - gap;
+            } else {
+                left = spotlight.left + spotlight.width / 2 - tooltipWidth / 2;
+                top = spotlight.top + spotlight.height + gap;
+            }
+
+            left = Math.max(margin, Math.min(left, window.innerWidth - tooltipWidth - margin));
+            top = Math.max(margin, Math.min(top, window.innerHeight - tooltipHeight - margin));
+
+            setTooltipStyle({
+                left: `${left}px`,
+                top: `${top}px`,
+                right: 'auto',
+                bottom: 'auto',
+                transform: 'none',
+            });
+        };
+
+        let rafB = 0;
+        const rafA = requestAnimationFrame(() => {
+            rafB = requestAnimationFrame(placeTooltip);
+        });
+        const handleResize = () => placeTooltip();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            cancelAnimationFrame(rafA);
+            if (rafB) cancelAnimationFrame(rafB);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [visible, spotlight, step, currentStep]);
+
     if (!visible || !spotlight) return null;
 
-    // Calculate tooltip position based on the step's preferred position
-    const tooltipStyle = {};
     const arrowDir = step.position;
-    const gap = 16;
-
-    if (arrowDir === 'right') {
-        tooltipStyle.top = Math.min(
-            spotlight.top + spotlight.height / 2,
-            window.innerHeight - 280
-        );
-        tooltipStyle.left = Math.min(
-            spotlight.left + spotlight.width + gap,
-            window.innerWidth - 380
-        );
-        tooltipStyle.transform = 'translateY(-50%)';
-    } else if (arrowDir === 'left') {
-        tooltipStyle.top = Math.min(
-            spotlight.top + spotlight.height / 2,
-            window.innerHeight - 280
-        );
-        tooltipStyle.right = Math.max(
-            window.innerWidth - spotlight.left + gap,
-            16
-        );
-        tooltipStyle.transform = 'translateY(-50%)';
-    } else if (arrowDir === 'top') {
-        tooltipStyle.bottom = Math.max(
-            window.innerHeight - spotlight.top + gap,
-            16
-        );
-        tooltipStyle.left = spotlight.left + spotlight.width / 2;
-        tooltipStyle.transform = 'translateX(-50%)';
-    } else {
-        tooltipStyle.top = spotlight.top + spotlight.height + gap;
-        tooltipStyle.left = spotlight.left + spotlight.width / 2;
-        tooltipStyle.transform = 'translateX(-50%)';
-    }
 
     return (
         <div className="tour-overlay">
