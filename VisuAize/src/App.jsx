@@ -117,17 +117,13 @@ export default function App() {
   // Theme State - persisted to localStorage
   const [theme, setTheme] = useState(() => {
     const savedTheme = getStorageItem(STORAGE_KEYS.THEME);
-    // Also check system preference if no saved theme
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
     return 'light';
   });
 
   // Background Choice State - persisted to localStorage
   const [backgroundId, setBackgroundId] = useState(() => {
-    return getStorageItem(STORAGE_KEYS.BACKGROUND, 'default');
+    return getStorageItem(STORAGE_KEYS.BACKGROUND, 'slate');
   });
 
   // Animations Enabled State - persisted to localStorage
