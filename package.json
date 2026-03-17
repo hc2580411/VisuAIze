@@ -1,0 +1,7 @@
+{
+  "name": "visuaize-deploy-root",
+  "private": true,
+  "scripts": {
+    "build": "npm install --prefix VisuAize && npm run build --prefix VisuAize"
+  }
+}
